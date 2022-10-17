@@ -1,0 +1,72 @@
+info:
+  contact: {}
+paths:
+  /auth/refresh-token:
+    post:
+      consumes:
+      - application/json
+      description: Обновление токена
+      parameters:
+      - description: Refresh Token
+        in: query
+        name: refresh_token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      tags:
+      - Auth
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: Вход
+      parameters:
+      - description: Логин для авторизации
+        in: query
+        name: login
+        required: true
+        type: string
+      - description: Пароль
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      tags:
+      - Auth
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: Регистрация нового пользователя
+      parameters:
+      - description: Телефон для авторизации
+        in: query
+        name: phone
+        required: true
+        type: string
+      - description: Имя пользователя
+        in: query
+        name: first_name
+        required: true
+        type: string
+      - description: Фамилия пользователя
+        in: query
+        name: second_name
+        required: true
+        type: string
+      - description: Пароль
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      tags:
+      - Auth
+swagger: "2.0"
