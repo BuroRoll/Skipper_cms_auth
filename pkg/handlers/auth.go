@@ -1,94 +1,104 @@
 package handlers
 
 import (
-	"Skipper_cms_auth/pkg/models/forms"
+	"Skipper_cms_auth/pkg/models/forms/inputForms"
+	"Skipper_cms_auth/pkg/models/forms/outputForms"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-// @BasePath /
-
-// @Schemes
 // @Description Регистрация нового пользователя
-// @Tags Auth
-// @Accept json
-// @Produce json
-// @Param   phone      		query     string     true  "Телефон для авторизации"
-// @Param   first_name      query     string     true  "Имя пользователя"
-// @Param   second_name     query     string     true  "Фамилия пользователя"
-// @Param   password      	query     string     true  "Пароль"
+// @Tags 		Auth
+// @Accept 		json
+// @Produce 	json
+// @Param 		request 	body 		inputForms.SignUpUserForm 	true 	"query params"
+// @Success 	200 		{object} 	outputForms.AuthResponse
+// @Failure     400         {object}  	outputForms.ErrorResponse
+// @Failure     500         {object}  	outputForms.ErrorResponse
 // @Router /auth/sign-up [post]
 func (h *Handler) signUp(c *gin.Context) {
-	var input forms.SignUpUserForm
+	var input inputForms.SignUpUserForm
 	if err := c.BindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверная форма регистрации"})
+		c.JSON(http.StatusBadRequest, outputForms.ErrorResponse{
+			Error: "Неверная форма регистрации",
+		})
 		return
 	}
 	_, err := h.services.Authorization.CreateUser(input)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка создания профиля"})
+		c.JSON(http.StatusInternalServerError, outputForms.ErrorResponse{
+			Error: "Ошибка создание профиля",
+		})
 		return
 	}
 	token, refreshToken, err := h.services.Authorization.GenerateToken(input.Phone, input.Password)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка создания токенов"})
+		c.JSON(http.StatusInternalServerError, outputForms.ErrorResponse{
+			Error: "Ошибка генерации токена",
+		})
 		return
 	}
-	response := map[string]interface{}{
-		"token":        token,
-		"refreshToken": refreshToken,
-	}
-	c.JSON(http.StatusOK, response)
+	c.JSON(http.StatusOK, outputForms.AuthResponse{
+		RefreshToken: refreshToken,
+		Token:        token,
+	},
+	)
 }
 
-// @Schemes
-// @Description Вход
-// @Tags Auth
-// @Accept json
-// @Produce json
-// @Param   login      		query     string     true  "Логин для авторизации"
-// @Param   password      	query     string     true  "Пароль"
+// @Description 	Вход
+// @Tags 			Auth
+// @Accept 			json
+// @Produce 		json
+// @Param 			request 	body 		inputForms.SignInInput 	true 	"query params"
+// @Success 		200 		{object} 	outputForms.AuthResponse
+// @Failure     	400         {object}  	outputForms.ErrorResponse
+// @Failure     	500         {object}  	outputForms.ErrorResponse
 // @Router /auth/sign-in [post]
 func (h *Handler) signIn(c *gin.Context) {
-	var input forms.SignInInput
+	var input inputForms.SignInInput
 
 	if err := c.BindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверная форма авторизации"})
+		c.JSON(http.StatusBadRequest, outputForms.ErrorResponse{
+			Error: "Неверная форма авторизации",
+		})
 		return
 	}
 	token, refreshToken, err := h.services.Authorization.GenerateToken(input.Login, input.Password)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Неверный логин или пароль"})
+		c.JSON(http.StatusInternalServerError, outputForms.ErrorResponse{
+			Error: "Неверный логин или пароль",
+		})
 		return
 	}
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"token":        token,
-		"refreshToken": refreshToken,
-	})
+	c.JSON(http.StatusOK, outputForms.AuthResponse{
+		RefreshToken: refreshToken,
+		Token:        token,
+	},
+	)
 }
 
-// @Schemes
 // @Description Обновление токена
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param   refresh_token      		query     string     true  "Refresh Token"
+// @Param 			request 	body 		inputForms.TokenReqBody 	true 	"query params"
+// @Success 		200 		{object} 	outputForms.RefreshTokenResponse
+// @Failure     	400         {object}  	outputForms.ErrorResponse
+// @Failure     	500         {object}  	outputForms.ErrorResponse
 // @Router /auth/refresh-token [post]
 func (h *Handler) refreshToken(c *gin.Context) {
-	var input forms.TokenReqBody
+	var input inputForms.TokenReqBody
 	err := c.Bind(&input)
 	userId, err := h.services.ParseRefreshToken(input.RefreshToken)
 	user, _ := h.services.GetUserData(userId)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Ошибка чтения токена"})
+		c.JSON(http.StatusBadRequest, outputForms.ErrorResponse{Error: "Ошибка чтения токена"})
 		return
 	}
 	token, _, err := h.services.Authorization.GenerateTokenByID(userId, user.Role)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка регенерации токена"})
+		c.JSON(http.StatusInternalServerError, outputForms.ErrorResponse{Error: "Ошибка регенерации токена"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"token": token,
-	})
+	c.JSON(http.StatusOK, outputForms.RefreshTokenResponse{Token: token})
 }

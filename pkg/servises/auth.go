@@ -2,7 +2,7 @@ package service
 
 import (
 	"Skipper_cms_auth/pkg/models"
-	"Skipper_cms_auth/pkg/models/forms"
+	"Skipper_cms_auth/pkg/models/forms/inputForms"
 	"Skipper_cms_auth/pkg/repository"
 	"crypto/sha256"
 	"errors"
@@ -38,7 +38,7 @@ type refreshTokenClaims struct {
 	UserId uint `json:"user_id"`
 }
 
-func (s *AuthService) CreateUser(user forms.SignUpUserForm) (uint, error) {
+func (s *AuthService) CreateUser(user inputForms.SignUpUserForm) (uint, error) {
 	user.Password = generatePasswordHash(user.Password)
 	return s.repo.CreateUser(user)
 }

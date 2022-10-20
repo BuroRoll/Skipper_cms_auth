@@ -30,14 +30,35 @@ const docTemplate = `{
                 ],
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Refresh Token",
-                        "name": "refresh_token",
-                        "in": "query",
-                        "required": true
+                        "description": "query params",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/inputForms.TokenReqBody"
+                        }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/outputForms.RefreshTokenResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/outputForms.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/outputForms.ErrorResponse"
+                        }
+                    }
+                }
             }
         },
         "/auth/sign-in": {
@@ -54,21 +75,35 @@ const docTemplate = `{
                 ],
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Логин для авторизации",
-                        "name": "login",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Пароль",
-                        "name": "password",
-                        "in": "query",
-                        "required": true
+                        "description": "query params",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/inputForms.SignInInput"
+                        }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/outputForms.AuthResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/outputForms.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/outputForms.ErrorResponse"
+                        }
+                    }
+                }
             }
         },
         "/auth/sign-up": {
@@ -85,35 +120,113 @@ const docTemplate = `{
                 ],
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Телефон для авторизации",
-                        "name": "phone",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Имя пользователя",
-                        "name": "first_name",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Фамилия пользователя",
-                        "name": "second_name",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Пароль",
-                        "name": "password",
-                        "in": "query",
-                        "required": true
+                        "description": "query params",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/inputForms.SignUpUserForm"
+                        }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/outputForms.AuthResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/outputForms.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/outputForms.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "inputForms.SignInInput": {
+            "type": "object",
+            "required": [
+                "login",
+                "password"
+            ],
+            "properties": {
+                "login": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "inputForms.SignUpUserForm": {
+            "type": "object",
+            "required": [
+                "first_name",
+                "password",
+                "phone",
+                "second_name"
+            ],
+            "properties": {
+                "first_name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "second_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "inputForms.TokenReqBody": {
+            "type": "object",
+            "required": [
+                "refresh_token"
+            ],
+            "properties": {
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "outputForms.AuthResponse": {
+            "type": "object",
+            "properties": {
+                "refresh_token": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "outputForms.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "outputForms.RefreshTokenResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
             }
         }
     }
@@ -121,12 +234,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "1.0",
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "Auth service",
+	Description:      "Auth methods for skipper cms",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

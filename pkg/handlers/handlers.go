@@ -26,7 +26,7 @@ func (h *Handler) InitRoutes() {
 		auth.POST("/sign-in", h.signIn)
 		auth.POST("/refresh-token", h.refreshToken)
 	}
-	docs.SwaggerInfo.BasePath = "/api/v1"
+	docs.SwaggerInfo.BasePath = "/"
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	router.Run()

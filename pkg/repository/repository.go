@@ -2,12 +2,12 @@ package repository
 
 import (
 	"Skipper_cms_auth/pkg/models"
-	"Skipper_cms_auth/pkg/models/forms"
+	"Skipper_cms_auth/pkg/models/forms/inputForms"
 	"gorm.io/gorm"
 )
 
 type Authorization interface {
-	CreateUser(user forms.SignUpUserForm) (uint, error)
+	CreateUser(user inputForms.SignUpUserForm) (uint, error)
 	GetUser(email, password string) (uint, []models.Role, error)
 	GetUserById(userId uint) (models.User, error)
 }

@@ -1,4 +1,4 @@
-package forms
+package inputForms
 
 type SignInInput struct {
 	Login    string `json:"login" binding:"required"`

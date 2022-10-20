@@ -1,5 +1,59 @@
+definitions:
+  inputForms.SignInInput:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    required:
+    - login
+    - password
+    type: object
+  inputForms.SignUpUserForm:
+    properties:
+      first_name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      second_name:
+        type: string
+    required:
+    - first_name
+    - password
+    - phone
+    - second_name
+    type: object
+  inputForms.TokenReqBody:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  outputForms.AuthResponse:
+    properties:
+      refresh_token:
+        type: string
+      token:
+        type: string
+    type: object
+  outputForms.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  outputForms.RefreshTokenResponse:
+    properties:
+      token:
+        type: string
+    type: object
 info:
   contact: {}
+  description: Auth methods for skipper cms
+  title: Auth service
+  version: "1.0"
 paths:
   /auth/refresh-token:
     post:
@@ -7,14 +61,27 @@ paths:
       - application/json
       description: Обновление токена
       parameters:
-      - description: Refresh Token
-        in: query
-        name: refresh_token
+      - description: query params
+        in: body
+        name: request
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/inputForms.TokenReqBody'
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/outputForms.RefreshTokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/outputForms.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/outputForms.ErrorResponse'
       tags:
       - Auth
   /auth/sign-in:
@@ -23,19 +90,27 @@ paths:
       - application/json
       description: Вход
       parameters:
-      - description: Логин для авторизации
-        in: query
-        name: login
+      - description: query params
+        in: body
+        name: request
         required: true
-        type: string
-      - description: Пароль
-        in: query
-        name: password
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/inputForms.SignInInput'
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/outputForms.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/outputForms.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/outputForms.ErrorResponse'
       tags:
       - Auth
   /auth/sign-up:
@@ -44,29 +119,27 @@ paths:
       - application/json
       description: Регистрация нового пользователя
       parameters:
-      - description: Телефон для авторизации
-        in: query
-        name: phone
+      - description: query params
+        in: body
+        name: request
         required: true
-        type: string
-      - description: Имя пользователя
-        in: query
-        name: first_name
-        required: true
-        type: string
-      - description: Фамилия пользователя
-        in: query
-        name: second_name
-        required: true
-        type: string
-      - description: Пароль
-        in: query
-        name: password
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/inputForms.SignUpUserForm'
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/outputForms.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/outputForms.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/outputForms.ErrorResponse'
       tags:
       - Auth
 swagger: "2.0"

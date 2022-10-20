@@ -11,7 +11,6 @@ import (
 var cmsDb *gorm.DB
 
 func init() {
-	//dbUri := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable port=%s password=%s", "0.0.0.0", "skipper_user_cms", "skipper_cms", "5432", "123456")
 	dbUri := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable port=%s password=%s",
 		os.Getenv("DB_HOST"),
 		os.Getenv("DB_USER"),
