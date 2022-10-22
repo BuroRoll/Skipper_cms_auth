@@ -1,4 +1,4 @@
-FROM golang:1.19-alpine
+FROM golang:1.18-alpine AS build
 
 WORKDIR /app
 
@@ -13,4 +13,7 @@ EXPOSE 8080
 
 RUN go build pkg/main.go
 
-CMD [ "./main" ]
+FROM scratch
+COPY --from=build /app/main /bin
+ENTRYPOINT ["/bin/main"]
+#CMD [ "./main" ]
