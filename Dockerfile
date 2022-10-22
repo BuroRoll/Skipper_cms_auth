@@ -5,15 +5,13 @@ WORKDIR /app
 COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
-
 COPY ./pkg ./pkg
-
-
-EXPOSE 8080
-
-RUN go build pkg/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /app pkg/main.go
 
 FROM scratch
-COPY --from=build /app/main /bin
-ENTRYPOINT ["/bin/main"]
-#CMD [ "./main" ]
+
+WORKDIR /app
+
+COPY --from=build /app/main ./main
+EXPOSE 8080
+ENTRYPOINT ["./main"]
