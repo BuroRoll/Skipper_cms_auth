@@ -1,4 +1,12 @@
 definitions:
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
   inputForms.SignInInput:
     properties:
       login:
@@ -32,12 +40,53 @@ definitions:
     required:
     - refresh_token
     type: object
+  models.Role:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.User:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      email:
+        description: Base information
+        type: string
+      firstName:
+        type: string
+      id:
+        type: integer
+      patronymic:
+        type: string
+      phone:
+        type: string
+      role:
+        items:
+          $ref: '#/definitions/models.Role'
+        type: array
+      secondName:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   outputForms.AuthResponse:
     properties:
       refresh_token:
         type: string
       token:
         type: string
+      user:
+        $ref: '#/definitions/models.User'
     type: object
   outputForms.ErrorResponse:
     properties:

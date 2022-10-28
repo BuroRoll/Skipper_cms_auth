@@ -24,7 +24,7 @@ func (h *Handler) signUp(c *gin.Context) {
 		})
 		return
 	}
-	_, err := h.services.Authorization.CreateUser(input)
+	userId, err := h.services.Authorization.CreateUser(input)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, outputForms.ErrorResponse{
 			Error: "Ошибка создание профиля",
@@ -32,6 +32,7 @@ func (h *Handler) signUp(c *gin.Context) {
 		return
 	}
 	token, refreshToken, err := h.services.Authorization.GenerateToken(input.Phone, input.Password)
+	user, err := h.services.GetUserData(userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, outputForms.ErrorResponse{
 			Error: "Ошибка генерации токена",
@@ -41,6 +42,7 @@ func (h *Handler) signUp(c *gin.Context) {
 	c.JSON(http.StatusOK, outputForms.AuthResponse{
 		RefreshToken: refreshToken,
 		Token:        token,
+		User:         user,
 	},
 	)
 }
@@ -64,6 +66,8 @@ func (h *Handler) signIn(c *gin.Context) {
 		return
 	}
 	token, refreshToken, err := h.services.Authorization.GenerateToken(input.Login, input.Password)
+	userId, _, err := h.services.GetUser(input.Login, input.Password)
+	user, err := h.services.GetUserData(userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, outputForms.ErrorResponse{
 			Error: "Неверный логин или пароль",
@@ -73,6 +77,7 @@ func (h *Handler) signIn(c *gin.Context) {
 	c.JSON(http.StatusOK, outputForms.AuthResponse{
 		RefreshToken: refreshToken,
 		Token:        token,
+		User:         user,
 	},
 	)
 }
