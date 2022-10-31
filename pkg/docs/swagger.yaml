@@ -17,22 +17,6 @@ definitions:
     - login
     - password
     type: object
-  inputForms.SignUpUserForm:
-    properties:
-      first_name:
-        type: string
-      password:
-        type: string
-      phone:
-        type: string
-      second_name:
-        type: string
-    required:
-    - first_name
-    - password
-    - phone
-    - second_name
-    type: object
   inputForms.TokenReqBody:
     properties:
       refresh_token:
@@ -145,35 +129,6 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/inputForms.SignInInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/outputForms.AuthResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/outputForms.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/outputForms.ErrorResponse'
-      tags:
-      - Auth
-  /auth/sign-up:
-    post:
-      consumes:
-      - application/json
-      description: Регистрация нового пользователя
-      parameters:
-      - description: query params
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/inputForms.SignUpUserForm'
       produces:
       - application/json
       responses:
