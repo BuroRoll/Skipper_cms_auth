@@ -2,7 +2,6 @@ package service
 
 import (
 	"Skipper_cms_auth/pkg/models"
-	"Skipper_cms_auth/pkg/models/forms/inputForms"
 	"Skipper_cms_auth/pkg/repository"
 	"crypto/sha256"
 	"errors"
@@ -38,20 +37,8 @@ type refreshTokenClaims struct {
 	UserId uint `json:"user_id"`
 }
 
-func (s *AuthService) CreateUser(user inputForms.SignUpUserForm) (uint, error) {
-	user.Password = generatePasswordHash(user.Password)
-	return s.repo.CreateUser(user)
-}
-
 func (s *AuthService) GetUser(login, password string) (uint, []models.Role, error) {
 	return s.repo.GetUser(login, generatePasswordHash(password))
-}
-
-func generatePasswordHash(password string) string {
-	hash := sha256.New()
-	hash.Write([]byte(password))
-
-	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
 }
 
 func (s *AuthService) GenerateToken(login, password string) (string, string, error) {
@@ -126,4 +113,11 @@ func (s *AuthService) ParseToken(accessToken string) (uint, []models.Role, error
 
 func (s *AuthService) GetUserData(userId uint) (models.User, error) {
 	return s.repo.GetUserById(userId)
+}
+
+func generatePasswordHash(password string) string {
+	hash := sha256.New()
+	hash.Write([]byte(password))
+
+	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
 }

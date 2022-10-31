@@ -7,46 +7,6 @@ import (
 	"net/http"
 )
 
-// @Description Регистрация нового пользователя
-// @Tags 		Auth
-// @Accept 		json
-// @Produce 	json
-// @Param 		request 	body 		inputForms.SignUpUserForm 	true 	"query params"
-// @Success 	200 		{object} 	outputForms.AuthResponse
-// @Failure     400         {object}  	outputForms.ErrorResponse
-// @Failure     500         {object}  	outputForms.ErrorResponse
-// @Router /auth/sign-up [post]
-func (h *Handler) signUp(c *gin.Context) {
-	var input inputForms.SignUpUserForm
-	if err := c.BindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, outputForms.ErrorResponse{
-			Error: "Неверная форма регистрации",
-		})
-		return
-	}
-	userId, err := h.services.Authorization.CreateUser(input)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, outputForms.ErrorResponse{
-			Error: "Ошибка создание профиля",
-		})
-		return
-	}
-	token, refreshToken, err := h.services.Authorization.GenerateToken(input.Phone, input.Password)
-	user, err := h.services.GetUserData(userId)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, outputForms.ErrorResponse{
-			Error: "Ошибка генерации токена",
-		})
-		return
-	}
-	c.JSON(http.StatusOK, outputForms.AuthResponse{
-		RefreshToken: refreshToken,
-		Token:        token,
-		User:         user,
-	},
-	)
-}
-
 // @Description 	Вход
 // @Tags 			Auth
 // @Accept 			json
@@ -58,7 +18,6 @@ func (h *Handler) signUp(c *gin.Context) {
 // @Router /auth/sign-in [post]
 func (h *Handler) signIn(c *gin.Context) {
 	var input inputForms.SignInInput
-
 	if err := c.BindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, outputForms.ErrorResponse{
 			Error: "Неверная форма авторизации",

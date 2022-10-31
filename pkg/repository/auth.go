@@ -2,7 +2,6 @@ package repository
 
 import (
 	"Skipper_cms_auth/pkg/models"
-	"Skipper_cms_auth/pkg/models/forms/inputForms"
 	"errors"
 	"gorm.io/gorm"
 )
@@ -31,19 +30,4 @@ func (r *AuthPostgres) GetUserById(userId uint) (models.User, error) {
 		return user, gorm.ErrRecordNotFound
 	}
 	return user, nil
-}
-
-func (r *AuthPostgres) CreateUser(userRegister inputForms.SignUpUserForm) (uint, error) {
-	var user models.User
-	user = models.User{
-		Phone:      userRegister.Phone,
-		FirstName:  userRegister.FirstName,
-		SecondName: userRegister.SecondName,
-		Password:   userRegister.Password,
-	}
-	result := r.db.Create(&user)
-	if result.Error != nil {
-		return user.ID, result.Error
-	}
-	return user.ID, nil
 }
