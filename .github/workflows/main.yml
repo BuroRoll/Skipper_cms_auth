@@ -1,0 +1,26 @@
+name: Update Server
+
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update project on server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd /home/buroroll/skipper_cms/skipper_cms_auth
+            docker run -d -p 8001:8080 --env-file .env --name skipper_cms_auth --restart unless-stopped buroroll/skipper_cms_auth:latest
