@@ -23,9 +23,11 @@ func init() {
 	}
 	cmsDb = conn
 	err = cmsDb.AutoMigrate(
-		&Role{},
 		&User{},
+		&Role{},
+		&UserRoles{},
 	)
+	err = cmsDb.SetupJoinTable(&User{}, "Role", &UserRoles{})
 
 	if err != nil {
 		log.Fatalf(err.Error())

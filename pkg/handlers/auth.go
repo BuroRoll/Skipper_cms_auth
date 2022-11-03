@@ -28,7 +28,7 @@ func (h *Handler) signIn(c *gin.Context) {
 	userId, _, err := h.services.GetUser(input.Login, input.Password)
 	user, err := h.services.GetUserData(userId)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, outputForms.ErrorResponse{
+		c.JSON(http.StatusBadRequest, outputForms.ErrorResponse{
 			Error: "Неверный логин или пароль",
 		})
 		return
