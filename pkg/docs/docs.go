@@ -149,19 +149,8 @@ const docTemplate = `{
         "models.Role": {
             "type": "object",
             "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "id": {
-                    "type": "integer"
-                },
                 "name": {
-                    "type": "string"
-                },
-                "updatedAt": {
+                    "description": "gorm.Model",
                     "type": "string"
                 }
             }
