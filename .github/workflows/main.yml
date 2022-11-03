@@ -37,4 +37,5 @@ jobs:
             cd /home/buroroll/skipper_cms/skipper_cms_auth
             docker stop skipper_cms_auth
             docker rm skipper_cms_auth
+            docker rmi --force buroroll/skipper_cms_auth
             docker run -d -p 8001:8080 --env-file .env --name skipper_cms_auth --restart unless-stopped buroroll/skipper_cms_auth:latest
