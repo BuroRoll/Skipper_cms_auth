@@ -18,7 +18,7 @@ type User struct {
 
 type Role struct {
 	//gorm.Model
-	Name string `gorm:"primarykey"`
+	Name string `gorm:"primaryKey"`
 }
 
 type UserRoles struct {
