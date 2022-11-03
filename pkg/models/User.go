@@ -17,7 +17,6 @@ type User struct {
 }
 
 type Role struct {
-	//gorm.Model
 	Name string `gorm:"primaryKey"`
 }
 
