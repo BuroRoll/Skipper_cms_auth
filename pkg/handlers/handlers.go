@@ -19,13 +19,15 @@ func NewHandler(services *service.Service) *Handler {
 func (h *Handler) InitRoutes() {
 	router := gin.Default()
 	router.Use(corsMiddleware())
-
-	auth := router.Group("/auth")
+	api_v1 := router.Group("/api/v1")
 	{
-		auth.POST("/sign-in", h.signIn)
-		auth.POST("/refresh-token", h.refreshToken)
+		auth := api_v1.Group("/auth")
+		{
+			auth.POST("/sign-in", h.signIn)
+			auth.POST("/refresh-token", h.refreshToken)
+		}
 	}
-	docs.SwaggerInfo.BasePath = "/"
+	docs.SwaggerInfo.BasePath = "/api/v1"
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	router.Run()

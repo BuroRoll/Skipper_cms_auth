@@ -27,7 +27,6 @@ definitions:
   models.Role:
     properties:
       name:
-        description: gorm.Model
         type: string
     type: object
   models.User:

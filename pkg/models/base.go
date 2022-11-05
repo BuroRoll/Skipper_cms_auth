@@ -42,7 +42,7 @@ func init() {
 				Password:   GeneratePasswordHash("admin"),
 			}
 			cmsDb.Create(&firstUser)
-			cmsDb.Model(&firstUser).Association("Role").Append(&Role{Name: "super_user"})
+			cmsDb.Model(&firstUser).Association("Role").Append(&Role{Name: "super_admin"})
 		}
 	}
 	err = cmsDb.SetupJoinTable(&User{}, "Role", &UserRoles{})
