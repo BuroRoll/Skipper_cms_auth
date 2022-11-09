@@ -8,6 +8,7 @@ import (
 type Authorization interface {
 	GetUser(email, password string) (uint, []models.Role, error)
 	GetUserById(userId uint) (models.User, error)
+	GetUserByEmail(email string) (models.User, error)
 }
 
 type UserData interface {

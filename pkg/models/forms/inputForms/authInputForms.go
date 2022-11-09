@@ -8,3 +8,11 @@ type SignInInput struct {
 type TokenReqBody struct {
 	RefreshToken string `json:"refresh_token" binding:"required"`
 }
+
+type ForgotPasswordInput struct {
+	Email string `json:"email" binding:"required"`
+}
+
+type ResetPasswordInput struct {
+	Password string `json:"password" binding:"required"`
+}

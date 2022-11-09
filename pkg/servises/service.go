@@ -12,6 +12,7 @@ type Authorization interface {
 	ParseToken(token string) (uint, []models.Role, error)
 	ParseRefreshToken(token string) (uint, error)
 	GetUserData(userId uint) (models.User, error)
+	SendEmailToResetPassword(email string) error
 }
 
 type Service struct {

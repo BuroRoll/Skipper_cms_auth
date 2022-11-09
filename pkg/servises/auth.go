@@ -3,19 +3,26 @@ package service
 import (
 	"Skipper_cms_auth/pkg/models"
 	"Skipper_cms_auth/pkg/repository"
+	"bytes"
 	"crypto/sha256"
 	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt"
+	"gopkg.in/gomail.v2"
+	"html/template"
+	"log"
+	"path/filepath"
+	"runtime"
 	"time"
 )
 
 const (
-	salt              = "14hjqrhj1231qw124617ajfha1123ssfqa3ssjs190"
-	signingKey        = "qrkjk#4#%35FSFJlja#4353KSFjH"
-	signingRefreshKey = "qrkjk#sdfioh12bkj@nkk3k1axv["
-	tokenTTL          = time.Hour * 12
-	refreshTokenTTL   = time.Hour * 12 * 365
+	salt                  = "14hjqrhj1231qw124617ajfha1123ssfqa3ssjs190"
+	signingKey            = "qrkjk#4#%35FSFJlja#4353KSFjH"
+	signingRefreshKey     = "qrkjk#sdfioh12bkj@nkk3k1axv["
+	tokenTTL              = time.Minute
+	refreshTokenTTL       = time.Hour * 12 * 365
+	resetPasswordTokenTTL = time.Hour
 )
 
 type AuthService struct {
@@ -30,6 +37,11 @@ type tokenClaims struct {
 	jwt.StandardClaims
 	UserId uint          `json:"user_id"`
 	Roles  []models.Role `json:"roles"`
+}
+
+type resetPasswordTokenClaims struct {
+	jwt.StandardClaims
+	UserId uint `json:"user_id"`
 }
 
 type refreshTokenClaims struct {
@@ -113,6 +125,75 @@ func (s *AuthService) ParseToken(accessToken string) (uint, []models.Role, error
 
 func (s *AuthService) GetUserData(userId uint) (models.User, error) {
 	return s.repo.GetUserById(userId)
+}
+
+func (s *AuthService) SendEmailToResetPassword(email string) error {
+	user, err := s.repo.GetUserByEmail(email)
+	if err != nil {
+		return errors.New("Пользователь не найден ")
+	}
+	err = s.SendVerifyEmail(user.ID, user.Email)
+	return err
+}
+
+func (s *AuthService) SendVerifyEmail(userId uint, email string) error {
+	token, err := GenerateTokenForResetPassword(userId)
+	err = SendEmailToVerify(email, token)
+	if err != nil {
+		return errors.New("Не удалось отправить сообщение ")
+	}
+	return nil
+}
+
+func GenerateTokenForResetPassword(userId uint) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &resetPasswordTokenClaims{
+		jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(resetPasswordTokenTTL).Unix(),
+			IssuedAt:  time.Now().Unix(),
+		},
+		userId,
+	})
+	resetPasswordToken, err := token.SignedString([]byte(signingKey))
+	if err != nil {
+		return "", errors.New("Ошибка генерации токена сброса пароля ")
+	}
+	return resetPasswordToken, nil
+}
+
+func SendEmailToVerify(email string, token string) error {
+	type data struct {
+		Token string
+		Link  string
+	}
+	userData := data{
+		Token: token,
+		Link:  "https://skipper.gq/reset-password?",
+	}
+	_, b, _, _ := runtime.Caller(0)
+	Root := filepath.Join(filepath.Dir(b), "../..")
+	t := template.New("resetPassword.html")
+	var err error
+	t, err = t.ParseFiles(Root + "/resetPassword.html")
+	if err != nil {
+		log.Println(err)
+	}
+
+	var tpl bytes.Buffer
+	if err := t.Execute(&tpl, userData); err != nil {
+		log.Println(err)
+	}
+	result := tpl.String()
+	m := gomail.NewMessage()
+	m.SetHeader("From", "buroroll@ya.ru")
+	m.SetHeader("To", email)
+	m.SetHeader("Subject", "Сброс пароля")
+	m.SetBody("text/html", result)
+	d := gomail.NewDialer("smtp.yandex.ru", 465, "buroroll@ya.ru", "zubsglsuzxxmqyht")
+	if err := d.DialAndSend(m); err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
 }
 
 func generatePasswordHash(password string) string {

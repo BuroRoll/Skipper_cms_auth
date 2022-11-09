@@ -31,3 +31,12 @@ func (r *AuthPostgres) GetUserById(userId uint) (models.User, error) {
 	}
 	return user, nil
 }
+
+func (r *AuthPostgres) GetUserByEmail(email string) (models.User, error) {
+	var user models.User
+	result := r.db.Where("email=?", email).First(&user)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return user, gorm.ErrRecordNotFound
+	}
+	return user, nil
+}

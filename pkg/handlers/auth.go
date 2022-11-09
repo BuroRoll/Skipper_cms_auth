@@ -66,3 +66,19 @@ func (h *Handler) refreshToken(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, outputForms.RefreshTokenResponse{Token: token})
 }
+
+func (h *Handler) sendEmailToResetPassword(c *gin.Context) {
+	var input inputForms.ForgotPasswordInput
+	if err := c.BindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, outputForms.ErrorResponse{
+			Error: "Неверная форма данных",
+		})
+		return
+	}
+	err := h.services.SendEmailToResetPassword(input.Email)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, outputForms.ErrorResponse{Error: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, "ok")
+}
