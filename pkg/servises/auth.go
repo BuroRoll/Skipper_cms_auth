@@ -20,7 +20,7 @@ const (
 	salt                  = "14hjqrhj1231qw124617ajfha1123ssfqa3ssjs190"
 	signingKey            = "qrkjk#4#%35FSFJlja#4353KSFjH"
 	signingRefreshKey     = "qrkjk#sdfioh12bkj@nkk3k1axv["
-	tokenTTL              = time.Second * 10
+	tokenTTL              = time.Hour
 	refreshTokenTTL       = time.Hour * 12 * 365
 	resetPasswordTokenTTL = time.Hour
 )
